@@ -8,6 +8,9 @@ import {defineConfig} from 'vite';
 const page = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig({
+  // The folder the site is served from. "/" for a normal domain; the GitHub Pages
+  // workflow sets BASE_PATH=/Emerald-Function-Venue-website-demo/ for the demo link.
+  base: process.env.BASE_PATH || '/',
   plugins: [react(), tailwindcss()],
   build: {
     target: 'es2020',
