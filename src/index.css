@@ -1,0 +1,180 @@
+@import 'tailwindcss';
+
+/* Emerald by evening: deep green-black, emerald, champagne gold from the
+   table settings, and the ivory of the draping. */
+@theme {
+  --color-ink: #0b1411;
+  --color-paper: #f7f3ea;
+  --color-ivory: #fffdf8;
+  --color-emerald: #0d4a37;
+  --color-emerald-deep: #082e23;
+  --color-jade: #2f5f52;
+  --color-champagne: #e3cf9f;
+  /* Gold dark enough to carry small text on paper (5.6:1). */
+  --color-gold: #7a5c24;
+  --color-line: #d9d0bd;
+
+  --font-serif: 'Libre Caslon Condensed', 'Times New Roman', serif;
+
+  --ease-silk: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --ease-wipe: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+html {
+  background: var(--color-ink);
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  background: var(--color-ink);
+  font-family: var(--font-serif);
+  overflow-x: clip;
+}
+::selection {
+  background: var(--color-champagne);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-champagne);
+  outline-offset: 3px;
+}
+.on-light :focus-visible,
+.on-light:focus-visible {
+  outline-color: var(--color-emerald);
+}
+
+/* In the components layer so Tailwind utilities (normal-case, text-[13px]…) can override them. */
+@layer components {
+  /* Condensed serif capitals, tight; italic lines lean out */
+  .display {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+  }
+  .display .it,
+  .display.it {
+    font-style: italic;
+  }
+  /* Small serif capitals with wide tracking, for labels and buttons */
+  .caps {
+    font-family: var(--font-serif);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  /* Readable running text */
+  .prose-body {
+    font-size: 18px;
+    line-height: 1.6;
+    letter-spacing: 0.005em;
+  }
+}
+
+/* Scroll reveals: rise and fade the first time a block is seen. */
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 900ms var(--ease-silk),
+    transform 1100ms var(--ease-silk);
+  transition-delay: var(--d, 0ms);
+}
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+/* Photos open like a curtain being drawn up. */
+[data-reveal='photo'] {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 1300ms var(--ease-wipe);
+  transition-delay: var(--d, 0ms);
+}
+[data-reveal='photo'].is-in {
+  clip-path: inset(0 0 0 0);
+}
+
+/* Page change: an emerald curtain wipes across, carrying the wordmark. */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  transform: translate3d(101%, 0, 0);
+}
+.curtain.is-closing {
+  transition: transform 650ms var(--ease-wipe);
+  transform: translate3d(0, 0, 0);
+}
+html.curtain-in .curtain {
+  transform: translate3d(0, 0, 0);
+}
+.curtain.is-opening {
+  transition: transform 750ms var(--ease-wipe);
+  transform: translate3d(-101%, 0, 0) !important;
+}
+
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain 0.6s steps(3) infinite;
+}
+@keyframes grain {
+  0% { transform: translate3d(0, 0, 0); }
+  33% { transform: translate3d(-3%, 2%, 0); }
+  66% { transform: translate3d(2%, -3%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* Slow drift on the hero photographs, standing in for a film. */
+@keyframes drift {
+  from { transform: scale(1.12) translate3d(1.5%, 1%, 0); }
+  to { transform: scale(1) translate3d(0, 0, 0); }
+}
+.drift {
+  animation: drift 9s linear both;
+}
+
+/* The wordmark gains a soft backing once the page scrolls, so it reads on any section. */
+.brand {
+  transition:
+    background-color 500ms var(--ease-silk),
+    backdrop-filter 500ms var(--ease-silk);
+}
+.brand.is-scrolled {
+  background-color: rgb(11 20 17 / 0.45);
+  backdrop-filter: blur(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain,
+  .drift { animation: none; }
+  [data-reveal],
+  [data-reveal='photo'] {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    transition: none;
+  }
+  .curtain { display: none; }
+}
